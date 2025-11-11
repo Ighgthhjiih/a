@@ -1,1 +1,339 @@
-div#contexto,div#home_sr h1{font-family:Acme,sans-serif;font-style:normal;color:#fff}div#box_video,div#modal iframe,nav#box_center,nav#home_back{max-width:100%;width:100%}*{padding:0;margin:0;box-sizing:border-box}nav#home_back{display:flexbox;height:400px;background:radial-gradient(#77b1d9,#1c4764);padding:10px;background-size:cover;background-position:100%}div#home_sr{display:flex;width:100%;padding:10px}div#home_sr h1{font-weight:400}div#contexto{display:flex;width:100%;text-align:center;justify-content:center}div#contexto h1{font-size:100px;font-family:Acme,sans-serif;font-weight:400;font-style:normal;color:#fff}[type=search],div#btn_search button{font-size:16px;color:#77b1d9;font-family:Acme,sans-serif;font-style:normal;padding:10px}div#btn_search,div#search_set{display:flex;justify-content:center;width:100%;margin:2% auto}div#confirma_busca,footer{justify-content:center;text-align:center;display:flex}[type=search]{border:none;width:500px;border-radius:100px;background-color:#ffffffe8;text-align:center;outline:#1c4764;box-shadow:-1px 2px 4px #1c4764}::placeholder{font-family:Acme,sans-serif;font-size:16px;font-style:normal;color:#77b1d9;text-align:center}div#btn_search button{border:none;width:100px;background-color:#1c4764;border-radius:100px;cursor:pointer;box-shadow:-1px 2px 4px #09090cc7}nav#box_center{display:flexbox;padding:10px}div#confirma_busca{padding:20px;font-family:Acme,sans-serif;font-size:20px;font-style:normal;color:#77b1d9}div#box_video{display:flex;flex-wrap:wrap;justify-content:center}div#box_video div{display:block;width:300px;height:200px;margin:5% 2%;cursor:pointer}div#box_video div img{width:100%}div#box_video div legend{width:100%;padding:5px;font-family:Acme,sans-serif;font-size:14px;font-style:normal;color:#16425f;text-align:center}nav#model_play{display:none;position:fixed;z-index:1;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgba(0,0,0,.4);padding-top:60px}div#modal{background-color:#1c4764;margin:2% auto;border:1px solid #888;width:80%;height:500px;box-shadow:0 5px 15px rgba(0,0,0,.3);border-radius:10px;position:relative;transition:.6s}div#modal iframe{display:flex;border-radius:10px;height:100%;border:none}div#modal #close{display:flex;color:#fff;font-size:18px;position:absolute;background:#16425f;padding:10px;border-top-left-radius:10px;border-bottom-right-radius:10px;cursor:pointer}#close:hover{transition-duration:.6s;background:#77b1d9;color:tomato}footer{width:100%;padding:10px;background:#16425f}div#dev{display:block;font-family:Acme,sans-serif;font-size:10px;font-style:normal;color:#ffffffa8;text-align:center}#dev_media{display:flex;width:100%;padding:0 10px;list-style:none}#dev_media li{display:flex;justify-content:center;padding:10px}#dev_media img{width:30px;height:30px;margin:0 1%;cursor:pointer}@media screen and (max-width:600px){[type=search],div#btn_search button,div#contexto h1{font-family:Acme,sans-serif;font-style:normal}[type=search],footer h1{font-size:14px}[type=search]{padding:10px;border:none;width:90%;border-radius:100px;background-color:#ffffffe8;color:#77b1d9;text-align:center;outline:#1c4764;box-shadow:-1px 2px 4px #1c4764}::placeholder{font-family:Acme,sans-serif;font-size:14px;font-style:normal;color:#77b1d9;text-align:center}div#btn_search button{padding:10px;border:none;width:90px;background-color:#1c4764;border-radius:100px;color:#77b1d9;margin:5% 0;font-size:16px;cursor:pointer;box-shadow:-1px 2px 4px #09090cc7}div#contexto h1{font-size:60px;font-weight:400;color:#fff}div#confirma_busca{font-size:12px}#dev_media img{width:20px;height:20px;margin:0 1%;cursor:pointer}#dev_media li{display:flex;justify-content:center;padding:10px 5px}div#box_video div{margin:10% 15%}}
+/* ========================================
+   RESET E CONFIGURAÇÕES GLOBAIS
+   ======================================== */
+* {
+    padding: 0;           /* Remove todo o espaçamento interno de todos os elementos */
+    margin: 0;            /* Remove todo o espaçamento externo (margem) */
+    box-sizing: border-box; /* Faz com que padding e border não aumentem o tamanho total do elemento */
+}
+
+/* ========================================
+   TIPOGRAFIA PRINCIPAL
+   ======================================== */
+div#contexto,
+div#home_sr h1 {
+    font-family: 'Acme', sans-serif; /* Usa a fonte Acme (Google Fonts) */
+    color: #fff;                     /* Texto branco */
+}
+
+/* ========================================
+   CABEÇALHO COM GRADIENTE (FUNDO AZUL)
+   ======================================== */
+nav#home_back {
+    display: flex;                    /* Usa Flexbox para organizar filhos em coluna */
+    flex-direction: column;           /* Organiza os itens verticalmente */
+    align-items: center;              /* Centraliza horizontalmente os filhos */
+    height: 400px;                    /* Altura fixa do cabeçalho */
+    background: linear-gradient(100deg,#00ff51, #00548c); /* Gradiente radial do azul claro ao escuro */
+    padding: 10px;                    /* Espaço interno */
+    background-size: cover;           /* Cobre todo o fundo */
+    background-position: center;      /* Centraliza o fundo (corrigido do erro "100%") */
+}
+
+/* ========================================
+   TÍTULO DA PÁGINA (ex: "Bem-vindo")
+   ======================================== */
+div#home_sr {
+    display: flex;                    /* Flexbox para centralizar o título */
+    width: 100%;                      /* Ocupa toda a largura */
+    padding: 10px;                    /* Espaço interno */
+    justify-content: center;          /* Centraliza horizontalmente o h1 */
+}
+
+div#home_sr h1 {
+    font-weight: 400;                 /* Peso da fonte normal */
+    font-size: 2.5rem;                /* Tamanho responsivo (equivalente a ~40px) */
+}
+
+/* ========================================
+   TÍTULO GRANDE CENTRAL (ex: "Vídeos Educativos")
+   ======================================== */
+div#contexto {
+    display: flex;                    /* Flexbox para centralizar */
+    width: 100%;                      /* Largura total */
+    text-align: center;               /* Texto centralizado */
+    justify-content: center;          /* Centraliza o conteúdo */
+    margin-top: 20px;                 /* Espaço acima do título */
+}
+
+div#contexto h1 {
+    font-size: 100px;                 /* Título gigante */
+    font-weight: 400;                 /* Peso normal */
+    color: #ff1414;                      /* Texto branco */
+}
+
+/* ========================================
+   BARRA DE BUSCA E BOTÃO
+   ======================================== */
+div#search_set,
+div#btn_search {
+    display: flex;                    /* Flexbox para alinhar campo e botão */
+    justify-content: center;          /* Centraliza horizontalmente */
+    width: 100%;                      /* Ocupa toda a largura */
+    margin: 2% auto;                  /* Margem superior/inferior e centraliza */
+}
+
+/* Campo de busca (input type="search") */
+[type=search] {
+    font-family: 'Acme', sans-serif;
+    font-size: 16px;
+  background: linear-gradient(100deg,#00548c7b, #00ff5154);                /* Cor do texto digitado */
+    padding: 12px 20px;               /* Espaço interno confortável */
+    border: none;                     /* Sem borda padrão */
+    width: 500px;                     /* Largura fixa */
+    max-width: 90%;                   /* Não ultrapassa 90% em telas pequenas */
+    border-radius: 100px;             /* Bordas arredondadas (efeito pílula) */
+    background-color: #ffffffe8;      /* Fundo branco com transparência */
+    text-align: center;               /* Texto centralizado */
+    box-shadow: -1px 2px 4px #000000; /* Sombra suave */
+    outline: 2px solid transparent;   /* Remove outline padrão */
+    transition: outline 0.3s;         /* Animação ao focar */
+}
+
+/* Efeito ao clicar no campo */
+[type=search]:focus {
+    outline: 2px solid #00ff2f;       /* Borda azul ao focar */
+}
+
+/* Placeholder (texto "Digite aqui...") */
+::placeholder {
+    font-family: 'Acme', sans-serif;
+    font-size: 16px;
+    color: #000000;
+    opacity: 0.8;                     /* Ligeiramente transparente */
+}
+
+/* Botão de busca */
+div#btn_search button {
+    font-family: 'Acme', sans-serif;
+    font-size: 16px;
+    color: #0625d7;
+    padding: 12px;
+    border: none;
+    width: 100px;
+    background-color: hsl(204, 100%, 53%);        /* Fundo azul escuro */
+    border-radius: 100px;             /* Pílula */
+    cursor: pointer;                  /* Mãozinha ao passar o mouse */
+    box-shadow: -1px 2px 4px rgba(9, 9, 12, 0.78); /* Sombra */
+    transition: background 0.3s, color 0.3s; /* Animação suave */
+}
+
+/* Efeito hover no botão */
+div#btn_search button:hover {
+    background-color: #000000;        /* Inverte as cores */
+    color: #1c4764;
+}
+
+/* ========================================
+   CONFIRMAÇÃO DA BUSCA E RODAPÉ
+   ======================================== */
+div#confirma_busca,
+footer {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    font-family: 'Acme', sans-serif;
+    color: #77b1d9;
+}
+
+/* ========================================
+   ÁREA CENTRAL DOS VÍDEOS
+   ======================================== */
+nav#box_center {
+    display: flex;
+    flex-direction: column;           /* Itens em coluna */
+    align-items: center;              /* Centraliza */
+    padding: 20px 10px;
+}
+
+/* Container dos cards de vídeo */
+div#box_video {
+    display: flex;
+    flex-wrap: wrap;                  /* Quebra linha automaticamente */
+    justify-content: center;          /* Centraliza os cards */
+    gap: 20px;                        /* Espaço entre os cards */
+    padding: 20px;
+}
+
+/* Cada card de vídeo */
+div#box_video > div {
+    width: 300px;                     /* Largura fixa */
+    cursor: pointer;                  /* Mãozinha ao passar */
+    border-radius: 8px;               /* Bordas arredondadas */
+    overflow: hidden;                 /* Esconde o que ultrapassa */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Sombra suave */
+    transition: transform 0.3s;       /* Animação de zoom */
+}
+
+/* Efeito ao passar o mouse no card */
+div#box_video > div:hover {
+    transform: scale(1.05);           /* Aumenta 5% */
+}
+
+/* Imagem do vídeo (thumbnail) */
+div#box_video img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;                /* Cobre o espaço sem distorcer */
+}
+
+/* Legenda do vídeo (título) */
+div#box_video figcaption {
+    padding: 8px;
+    font-family: 'Acme', sans-serif;
+    font-size: 14px;
+    color: #16425f;
+    text-align: center;
+    background: #f8f9fa;              /* Fundo claro */
+}
+
+/* ========================================
+   MODAL (Janela que abre o vídeo)
+   ======================================== */
+nav#model_play {
+    display: none;                    /* Escondido por padrão */
+    position: fixed;                  /* Fixo na tela */
+    z-index: 1000;                    /* Acima de tudo */
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Fundo escuro com transparência */
+    padding-top: 60px;
+    overflow: auto;                   /* Rolagem se necessário */
+    animation: fadeIn 0.3s;            /* Animação de entrada */
+}
+
+/* Janela do modal */
+div#modal {
+    position: relative;
+    background-color: #1c4764;
+    margin: 2% auto;
+    width: 90%;
+    max-width: 1000px;
+    height: 500px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    animation: zoomIn 0.4s;           /* Animação de zoom */
+}
+
+/* Vídeo dentro do modal (iframe do YouTube) */
+div#modal iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 10px;
+}
+
+/* Botão X para fechar */
+div#modal #close {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: #16425f;
+    color: #fff;
+    font-size: 18px;
+    padding: 8px 12px;
+    border-radius: 50%;               /* Círculo */
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s;
+}
+
+/* Efeito ao passar no X */
+div#modal #close:hover {
+    background: #77b1d9;
+    color: #fff;
+    transform: rotate(90deg);         /* Gira 90° */
+}
+
+/* ========================================
+   RODAPÉ
+   ======================================== */
+footer {
+    background: #16425f;
+    color: #ffffffa8;
+    padding: 20px 10px;
+    font-size: 12px;
+}
+
+/* Texto do desenvolvedor */
+div#dev {
+    display: block;
+    font-family: 'Acme', sans-serif;
+    font-size: 10px;
+    color: #ffffffa8;
+    text-align: center;
+}
+
+/* Ícones de redes sociais */
+#dev_media {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin-top: 10px;
+}
+
+#dev_media li {
+    margin: 0 10px;
+}
+
+#dev_media img {
+    width: 30px;
+    height: 30px;
+    filter: brightness(0) invert(1);  /* Torna o ícone branco */
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+#dev_media img:hover {
+    opacity: 1;                       /* Fica totalmente visível */
+}
+
+/* ========================================
+   ANIMAÇÕES
+   ======================================== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* ========================================
+   RESPONSIVIDADE (TELAS PEQUENAS)
+   ======================================== */
+@media screen and (max-width: 600px) {
+    div#contexto h1 {
+        font-size: 60px;              /* Título menor em celular */
+    }
+
+    [type=search] {
+        width: 90%;                   /* Campo ocupa quase tudo */
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    div#btn_search button {
+        width: 90px;
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    div#box_video > div {
+        width: 90%;                   /* Cards ocupam quase toda a tela */
+        margin: 20px 0;
+    }
+
+    #dev_media img {
+        width: 24px;
+        height: 24px;
+    }
+
+    div#modal {
+        height: 300px;                /* Modal menor em celular */
+        margin: 10% auto;
+    }
+}
