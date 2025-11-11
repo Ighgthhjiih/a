@@ -198,7 +198,7 @@ nav#model_play {
     left: 0; top: 0;
     width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.6); /* Fundo escuro com transparência */
-    padding-top: 60px;
+    padding-top: 0px;
     overflow: auto;                   /* Rolagem se necessário */
     animation: fadeIn 0.3s;            /* Animação de entrada */
 }
@@ -207,10 +207,10 @@ nav#model_play {
 div#modal {
     position: relative;
     background-color: #1c4764;
-    margin: 2% auto;
-    width: 90%;
-    max-width: 1000px;
-    height: 500px;
+   
+    width: 100%;
+    max-width: 100%;
+    height:100%;
     border-radius: 10px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
     overflow: hidden;
