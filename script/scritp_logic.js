@@ -150,9 +150,9 @@ $(document).ready(() => {
     });
 
     // Links sociais
-    $("#fb").attr("href", "https://www.facebook.com/profile.php?id=100074620631348");
-    $("#ins").attr("href", "https://www.instagram.com/jorge_devs/");
-    $("#lins").attr("href", "https://www.linkedin.com/in/jorge-devs");
+    $("#fb").attr();
+    $("#ins").attr();
+    $("#lins").attr();
 
     // Inicial
     $("#confirma_busca").html(`<h2>Pesquise algo no YouTube</h2>`);
