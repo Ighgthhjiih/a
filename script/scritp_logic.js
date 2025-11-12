@@ -1,5 +1,5 @@
 $(document).ready(() => {
-    // ===== 10 CHAVES (CRIE 10 PROJETOS NO GOOGLE CLOUD) =====
+    // ===== CHAVES DA API (MANTENHA, MAS USE BACKEND EM PRODUÇÃO) =====
     const API_KEYS = [
         'AIzaSyAXQ8pDhmoWtmD3vP_SVy3PAtB5mcyLrik',
         'AIzaSyAELl7fzEAwusdazxOg6eg3PxQiJe44ic8',
@@ -11,77 +11,149 @@ $(document).ready(() => {
         'AIzaSyAxMkuH9b7jQLrKP2bM57JXUxUOOkzrusU',
         'AIzaSyDQMkx6W7zIuys1QeeAMbkOf_HFbfo9jiU',
         'AIzaSyAy9-AEdW5wA0Bs_PLCp_YF1I5EYed1YYId'
-
-       
     ];
 
-    // CHAVE ALEATÓRIA A CADA BUSCA (NUNCA REPETE PADRÃO)
     function getRandomKey() {
         const index = Math.floor(Math.random() * API_KEYS.length);
         const key = API_KEYS[index];
-        console.log("Chave usada:", key); // ← REMOVE DEPOIS DE TESTAR
+        console.log("Chave usada:", key);
         return key;
     }
 
-    function e() { 
-        $("#fb").attr("href", "https://www.facebook.com/profile.php?id=100074620631348");
-        $("#ins").attr("href", "https://www.instagram.com/jorge_devs/");
-        $("#lins").attr("href", "https://www.linkedin.com/in/jorge-devs");
+    // ===== DETECTA MOBILE =====
+    function isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
-    function t() { 
-        $("#close").on("click", () => { 
-            $("#wath").attr("src", ""); 
-            $("#model_play").css("display", "none");
-        });
+    // ===== FUNÇÃO PARA ABRIR VÍDEO (COM FULLSCREEN + LANDSCAPE) =====
+    function abrirVideo(videoId) {
+        const iframe = document.getElementById("wath");
+        const modal = document.getElementById("model_play");
+
+        // URL com autoplay + fullscreen forçado
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=0&mute=0&rel=0`;
+
+        // Mostra modal
+        modal.style.display = "flex";
+
+        // === MOBILE: FORÇA LANDSCAPE ===
+        if (isMobile()) {
+            setTimeout(() => {
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(() => {
+                        console.log("Lock de orientação não suportado (iOS ou navegador antigo)");
+                    });
+                }
+
+                // Força fullscreen no iframe (funciona melhor no Android)
+                if (iframe.requestFullscreen) {
+                    iframe.requestFullscreen();
+                } else if (iframe.webkitRequestFullscreen) {
+                    iframe.webkitRequestFullscreen();
+                } else if (iframe.msRequestFullscreen) {
+                    iframe.msRequestFullscreen();
+                }
+            }, 600);
+        }
     }
 
-    function o() {
+    // ===== BUSCA NO YOUTUBE =====
+    function buscar() {
         let query = document.getElementById("search").value.trim();
         if (!query) return;
 
-        const key = getRandomKey(); // ← ALEATÓRIA A CADA BUSCA
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=10&order=relevance&regionCode=BR&key=${key}`;
+        const key = getRandomKey();
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=12&order=relevance&regionCode=BR&key=${key}`;
+
+        $("#box_video").html('<div class="loading">Carregando...</div>');
+        $("#confirma_busca").html('<h2>Buscando vídeos...</h2>');
 
         fetch(url)
             .then(r => r.json())
             .then(data => {
-                let t = document.getElementById("box_video");
-                t.innerHTML = "";
+                let container = document.getElementById("box_video");
+                container.innerHTML = "";
+
+                if (!data.items || data.items.length === 0) {
+                    container.innerHTML = "<p>Nenhum vídeo encontrado.</p>";
+                    $("#confirma_busca").html("<h2>Sem resultados</h2>");
+                    return;
+                }
+
                 data.items.forEach(item => {
                     let videoId = item.id.videoId;
-                    let thumb = item.snippet.thumbnails.high.url;
-                    let title = item.snippet.title;
+                    let thumb = item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium.url;
+                    let title = item.snippet.title.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // XSS safe
 
-                    let s = document.createElement("div");
-                    s.onclick = () => n(videoId);
-                    s.innerHTML = `
-                        <img src="${thumb}" alt="Imagem">
-                        <legend>${title}</legend>
+                    let div = document.createElement("div");
+                    div.className = "video-item";
+                    div.tabIndex = 0;
+                    div.innerHTML = `
+                        <img src="${thumb}" alt="${title}" loading="lazy">
+                        <p>${title}</p>
                     `;
-                    t.appendChild(s);
+
+                    // Clique ou Enter
+                    div.onclick = () => abrirVideo(videoId);
+                    div.onkeydown = (e) => { if (e.key === "Enter") abrirVideo(videoId); };
+
+                    container.appendChild(div);
                 });
-                $("#confirma_busca").html(`<h2>Resultado (${data.items.length} vídeos)</h2>`);
+
+                $("#confirma_busca").html(`<h2>${data.items.length} vídeos encontrados</h2>`);
             })
             .catch(err => {
-                console.error("Erro com chave:", key, err);
-                $("#confirma_busca").html(`<h2>Erro. Tente novamente.</h2>`);
+                console.error("Erro:", err);
+                $("#box_video").html("<p>Erro na busca. Tente novamente.</p>");
+                $("#confirma_busca").html("<h2>Erro</h2>");
             });
     }
 
-    function n(videoId) { 
-        $("#model_play").css("display", "block");
-        $("#wath").attr("src", `https://www.youtube.com/embed/${videoId}`);
+    // ===== FECHAR MODAL =====
+    function fecharModal() {
+        $("#wath").attr("src", "");
+        $("#model_play").css("display", "none");
+
+        // Desbloqueia orientação
+        if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+        }
+
+        // Sai do fullscreen
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
     }
 
-    $("#btn").click(o);
+    // ===== EVENTOS =====
+    $("#btn").click(() => {
+        buscar();
+        $("#search").val("");
+    });
+
     $("#search").on("keydown", e => {
         if (e.key === "Enter") {
-            o();
+            buscar();
             $("#search").val("");
         }
     });
 
-    e(); t();
-    $("#confirma_busca").html(`<h2>Pesquise algo</h2>`);
+    $("#close").on("click", fecharModal);
+
+    // Fechar com ESC
+    $(document).on("keydown", e => {
+        if (e.key === "Escape") fecharModal();
+    });
+
+    // Fechar clicando fora
+    $("#model_play").on("click", e => {
+        if (e.target.id === "model_play") fecharModal();
+    });
+
+    // Links sociais
+    $("#fb").attr("href", "https://www.facebook.com/profile.php?id=100074620631348");
+    $("#ins").attr("href", "https://www.instagram.com/jorge_devs/");
+    $("#lins").attr("href", "https://www.linkedin.com/in/jorge-devs");
+
+    // Inicial
+    $("#confirma_busca").html(`<h2>Pesquise algo no YouTube</h2>`);
 });
