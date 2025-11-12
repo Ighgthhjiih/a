@@ -103,15 +103,16 @@ div#btn_search {
     opacity: 0.8;                     /* Ligeiramente transparente */
 }
 
+
 /* Botão de busca */
 div#btn_search button {
     font-family: 'Acme', sans-serif;
     font-size: 16px;
-    color: #0625d7;
+    color: #000000;
     padding: 12px;
     border: none;
     width: 100px;
-    background-color: hsl(204, 100%, 53%);        /* Fundo azul escuro */
+    background-color: hsl(0, 0%, 100%);        /* Fundo azul escuro */
     border-radius: 100px;             /* Pílula */
     cursor: pointer;                  /* Mãozinha ao passar o mouse */
     box-shadow: -1px 2px 4px rgba(9, 9, 12, 0.78); /* Sombra */
@@ -121,8 +122,9 @@ div#btn_search button {
 /* Efeito hover no botão */
 div#btn_search button:hover {
     background-color: #000000;        /* Inverte as cores */
-    color: #1c4764;
+    color: #ffffff;
 }
+
 
 /* ========================================
    CONFIRMAÇÃO DA BUSCA E RODAPÉ
