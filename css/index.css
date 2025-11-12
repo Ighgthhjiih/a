@@ -70,7 +70,7 @@ div#btn_search {
     display: flex;                    /* Flexbox para alinhar campo e botão */
     justify-content: center;          /* Centraliza horizontalmente */
     width: 100%;                      /* Ocupa toda a largura */
-    margin: 2% auto;                  /* Margem superior/inferior e centraliza */
+    margin: 1% auto;                  /* Margem superior/inferior e centraliza */
 }
 
 /* Campo de busca (input type="search") */
@@ -170,7 +170,8 @@ div#box_video > div {
 
 /* Efeito ao passar o mouse no card */
 div#box_video > div:hover {
-    transform: scale(1.05);           /* Aumenta 5% */
+    transform: scale(1.05);        
+      box-shadow: 0 9px 9px rgb(57, 57, 57);
 }
 
 /* Imagem do vídeo (thumbnail) */
