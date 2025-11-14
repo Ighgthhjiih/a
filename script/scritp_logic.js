@@ -58,18 +58,19 @@ $(document).ready(() => {
         }
     }
 
-    // ===== BUSCA NO YOUTUBE (MODIFICADA) =====
+    // ===== BUSCA NO YOUTUBE (UMA CHAMADA - SEM FILTRAGEM DE SHORTS) =====
     function buscar() {
         let query = document.getElementById("search").value.trim();
         if (!query) return;
 
         const key = getRandomKey();
         
-        // MODIFICAÇÃO AQUI: maxResults=20 e order=date
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=50&order=date&regionCode=BR&key=${key}`;
+        // Chamada única search.list (Custo: 100)
+        // maxResults=50 e order=relevance
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=50&order=relevance&regionCode=BR&key=${key}`;
 
         $("#box_video").html('<div class="loading">Carregando...</div>');
-        $("#confirma_busca").html('<h2>Buscando vídeos mais recentes...</h2>');
+        $("#confirma_busca").html('<h2>Buscando vídeos...</h2>');
 
         fetch(url)
             .then(r => r.json())
@@ -103,7 +104,7 @@ $(document).ready(() => {
                     container.appendChild(div);
                 });
 
-                $("#confirma_busca").html(`<h2>${data.items.length} vídeos recentes encontrados</h2>`);
+                $("#confirma_busca").html(`<h2>${data.items.length} vídeos encontrados</h2>`);
             })
             .catch(err => {
                 console.error("Erro:", err);
