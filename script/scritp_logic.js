@@ -1,4 +1,9 @@
 $(document).ready(() => {
+    // Variáveis para controlar os vídeos e o estado de exibição
+    let allVideos = []; // Armazena os 50 vídeos da API
+    let currentDisplayIndex = 0; // Índice do próximo vídeo a ser exibido
+    const BATCH_SIZE = 16; // Quantidade de vídeos a carregar por vez
+
     // ===== CHAVES DA API (MANTENHA, MAS USE BACKEND EM PRODUÇÃO) =====
     const API_KEYS = [
         // Suas chaves de API...
@@ -21,12 +26,12 @@ $(document).ready(() => {
         return key;
     }
 
-    // ===== DETECTA MOBILE =====
+    // ===== DETECTA MOBILE (Restante do código...) =====
     function isMobile() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
-    // ===== FUNÇÃO PARA ABRIR VÍDEO (COM FULLSCREEN + LANDSCAPE) =====
+    // ===== FUNÇÃO PARA ABRIR VÍDEO (Restante do código...) =====
     function abrirVideo(videoId) {
         const iframe = document.getElementById("wath");
         const modal = document.getElementById("model_play");
@@ -51,67 +56,113 @@ $(document).ready(() => {
             }, 600);
         }
     }
+    
+    // ===== FUNÇÃO AJUDAR PARA CRIAR O ITEM DE VÍDEO (REUSÁVEL) =====
+    function createVideoItem(item) {
+        let videoId = item.id.videoId;
+        let thumb = item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium.url;
+        let title = item.snippet.title.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // XSS safe
 
-    // ===== BUSCA NO YOUTUBE (BUSCA 50, EXIBE 16) =====
+        let div = document.createElement("div");
+        div.className = "video-item";
+        div.tabIndex = 0;
+        div.innerHTML = `
+            <img src="${thumb}" alt="${title}" loading="lazy">
+            <p>${title}</p>
+        `;
+
+        div.onclick = () => abrirVideo(videoId);
+        div.onkeydown = (e) => { if (e.key === "Enter") abrirVideo(videoId); };
+        
+        return div;
+    }
+
+    // ===== FUNÇÃO PARA EXIBIR O PRÓXIMO LOTE DE VÍDEOS =====
+    function displayNextBatch() {
+        const container = document.getElementById("box_video");
+        const startIndex = currentDisplayIndex;
+        const endIndex = Math.min(allVideos.length, currentDisplayIndex + BATCH_SIZE);
+        
+        // Renderiza apenas o novo lote
+        for (let i = startIndex; i < endIndex; i++) {
+            const videoItem = createVideoItem(allVideos[i]);
+            container.appendChild(videoItem);
+        }
+
+        // Atualiza o índice
+        currentDisplayIndex = endIndex;
+        
+        // Atualiza o botão "Carregar Mais"
+        updateLoadMoreButton();
+    }
+    
+    // ===== FUNÇÃO PARA CRIAR/ATUALIZAR O BOTÃO "CARREGAR MAIS" =====
+    function updateLoadMoreButton() {
+        const btnContainer = document.getElementById("load-more-container");
+        
+        // Verifica se ainda há vídeos para exibir
+        if (currentDisplayIndex < allVideos.length) {
+            
+            // Se o botão não existe, cria ele
+            if (!document.getElementById("btn-carregar-mais")) {
+                let btn = document.createElement("button");
+                btn.id = "btn-carregar-mais";
+                btn.textContent = `Carregar Mais`;
+                btn.onclick = displayNextBatch; // Liga a função ao clique
+                btnContainer.innerHTML = ''; // Limpa antes de adicionar
+                btnContainer.appendChild(btn);
+            }
+            
+            // Atualiza o texto para refletir quantos faltam
+            const restantes = allVideos.length - currentDisplayIndex;
+            const proximoLote = Math.min(BATCH_SIZE, restantes);
+            
+            $("#btn-carregar-mais").text(`Carregar Mais (${proximoLote} de ${restantes})`);
+            
+        } else {
+            // Se todos os vídeos foram exibidos, remove o botão
+            btnContainer.innerHTML = '<p class="end-message">Fim dos resultados.</p>';
+        }
+
+        // Atualiza a mensagem de confirmação
+        $("#confirma_busca").html(`<h2>${currentDisplayIndex} vídeos exibidos de ${allVideos.length} encontrados</h2>`);
+    }
+
+    // ===== BUSCA NO YOUTUBE (BUSCA 50) =====
     function buscar() {
         let query = document.getElementById("search").value.trim();
         if (!query) return;
 
         const key = getRandomKey();
         
-        // **ALTERAÇÃO 1: maxResults=50 para máxima eficiência de cota (Custo: 100)**
+        // Busca com maxResults=50 (Custo: 100 créditos)
         const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=50&order=relevance&regionCode=BR&key=${key}`;
 
         $("#box_video").html('<div class="loading">Carregando...</div>');
+        // Limpa o container do botão durante o carregamento
+        $("#load-more-container").html(''); 
         $("#confirma_busca").html('<h2>Buscando vídeos...</h2>');
 
         fetch(url)
             .then(r => r.json())
             .then(data => {
-                let container = document.getElementById("box_video");
-                container.innerHTML = "";
                 
-                if (!data.items || data.items.length === 0) {
-                    container.innerHTML = "<p>Nenhum vídeo encontrado.</p>";
+                // 1. Inicializa o estado com os novos dados
+                allVideos = data.items || [];
+                currentDisplayIndex = 0;
+                
+                if (allVideos.length === 0) {
+                    $("#box_video").html("<p>Nenhum vídeo encontrado.</p>");
                     $("#confirma_busca").html("<h2>Sem resultados</h2>");
                     return;
                 }
 
-                // **ALTERAÇÃO 2: Limita a exibição inicial a 16 vídeos**
-                const videosExibirInicial = 16;
-                const itemsParaExibir = data.items.slice(0, videosExibirInicial);
+                // 2. Limpa o container para a primeira exibição
+                $("#box_video").html('');
                 
-                itemsParaExibir.forEach(item => {
-                    let videoId = item.id.videoId;
-                    let thumb = item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium.url;
-                    let title = item.snippet.title.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                // 3. Exibe o primeiro lote de vídeos
+                displayNextBatch();
 
-                    let div = document.createElement("div");
-                    div.className = "video-item";
-                    div.tabIndex = 0;
-                    div.innerHTML = `
-                        <img src="${thumb}" alt="${title}" loading="lazy">
-                        <p>${title}</p>
-                    `;
-
-                    div.onclick = () => abrirVideo(videoId);
-                    div.onkeydown = (e) => { if (e.key === "Enter") abrirVideo(videoId); };
-
-                    container.appendChild(div);
-                });
-
-                let msgConfirmacao = `<h2>${itemsParaExibir.length} vídeos exibidos de ${data.items.length} encontrados</h2>`;
-                
-                // **Opcional: Adiciona um aviso se há mais para carregar**
-                if (data.items.length > videosExibirInicial) {
-                    msgConfirmacao += `<p>Há mais ${data.items.length - videosExibirInicial} vídeos disponíveis. Adicione o botão "Carregar Mais"!</p>`;
-                }
-                
-                $("#confirma_busca").html(msgConfirmacao);
-
-                // **Melhoria: Armazena o restante dos dados para "Carregar Mais" sem nova API Call**
-                // Em um projeto real, você armazenaria 'data.items' em uma variável global
-                // ou do componente para usar no botão "Carregar Mais".
             })
             .catch(err => {
                 console.error("Erro:", err);
@@ -120,20 +171,22 @@ $(document).ready(() => {
             });
     }
 
-    // ===== FECHAR MODAL =====
+    // ===== FECHAR MODAL (Restante do código...) =====
     function fecharModal() {
         $("#wath").attr("src", "");
         $("#model_play").css("display", "none");
 
+        // Desbloqueia orientação
         if (screen.orientation && screen.orientation.unlock) {
             screen.orientation.unlock();
         }
 
+        // Sai do fullscreen
         if (document.exitFullscreen) document.exitFullscreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
     }
 
-    // ===== EVENTOS =====
+    // ===== EVENTOS (Restante do código...) =====
     $("#btn").click(() => {
         buscar();
         $("#search").val("");
@@ -148,13 +201,16 @@ $(document).ready(() => {
 
     $("#close").on("click", fecharModal);
 
+    // Fechar com ESC
     $(document).on("keydown", e => {
         if (e.key === "Escape") fecharModal();
     });
 
+    // Fechar clicando fora
     $("#model_play").on("click", e => {
         if (e.target.id === "model_play") fecharModal();
     });
 
+    // Inicial
     $("#confirma_busca").html(`<h2>Pesquise algo no YouTube</h2>`);
 });
