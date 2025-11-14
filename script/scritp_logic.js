@@ -21,23 +21,19 @@ $(document).ready(() => {
         return key;
     }
 
-    // ===== DETECTA MOBILE (Restante do código...) =====
+    // ===== DETECTA MOBILE =====
     function isMobile() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
-    // ===== FUNÇÃO PARA ABRIR VÍDEO (Restante do código...) =====
+    // ===== FUNÇÃO PARA ABRIR VÍDEO (COM FULLSCREEN + LANDSCAPE) =====
     function abrirVideo(videoId) {
         const iframe = document.getElementById("wath");
         const modal = document.getElementById("model_play");
 
-        // URL com autoplay + fullscreen forçado
         iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=0&mute=0&rel=0`;
-
-        // Mostra modal
         modal.style.display = "flex";
 
-        // === MOBILE: FORÇA LANDSCAPE ===
         if (isMobile()) {
             setTimeout(() => {
                 if (screen.orientation && screen.orientation.lock) {
@@ -45,8 +41,6 @@ $(document).ready(() => {
                         console.log("Lock de orientação não suportado (iOS ou navegador antigo)");
                     });
                 }
-
-                // Força fullscreen no iframe (funciona melhor no Android)
                 if (iframe.requestFullscreen) {
                     iframe.requestFullscreen();
                 } else if (iframe.webkitRequestFullscreen) {
@@ -58,15 +52,14 @@ $(document).ready(() => {
         }
     }
 
-    // ===== BUSCA NO YOUTUBE (UMA CHAMADA - SEM FILTRAGEM DE SHORTS) =====
+    // ===== BUSCA NO YOUTUBE (BUSCA 50, EXIBE 16) =====
     function buscar() {
         let query = document.getElementById("search").value.trim();
         if (!query) return;
 
         const key = getRandomKey();
         
-        // Chamada única search.list (Custo: 100)
-        // maxResults=50 e order=relevance
+        // **ALTERAÇÃO 1: maxResults=50 para máxima eficiência de cota (Custo: 100)**
         const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=50&order=relevance&regionCode=BR&key=${key}`;
 
         $("#box_video").html('<div class="loading">Carregando...</div>');
@@ -77,17 +70,21 @@ $(document).ready(() => {
             .then(data => {
                 let container = document.getElementById("box_video");
                 container.innerHTML = "";
-
+                
                 if (!data.items || data.items.length === 0) {
                     container.innerHTML = "<p>Nenhum vídeo encontrado.</p>";
                     $("#confirma_busca").html("<h2>Sem resultados</h2>");
                     return;
                 }
 
-                data.items.forEach(item => {
+                // **ALTERAÇÃO 2: Limita a exibição inicial a 16 vídeos**
+                const videosExibirInicial = 16;
+                const itemsParaExibir = data.items.slice(0, videosExibirInicial);
+                
+                itemsParaExibir.forEach(item => {
                     let videoId = item.id.videoId;
                     let thumb = item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium.url;
-                    let title = item.snippet.title.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // XSS safe
+                    let title = item.snippet.title.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
                     let div = document.createElement("div");
                     div.className = "video-item";
@@ -97,14 +94,24 @@ $(document).ready(() => {
                         <p>${title}</p>
                     `;
 
-                    // Clique ou Enter
                     div.onclick = () => abrirVideo(videoId);
                     div.onkeydown = (e) => { if (e.key === "Enter") abrirVideo(videoId); };
 
                     container.appendChild(div);
                 });
 
-                $("#confirma_busca").html(`<h2>${data.items.length} vídeos encontrados</h2>`);
+                let msgConfirmacao = `<h2>${itemsParaExibir.length} vídeos exibidos de ${data.items.length} encontrados</h2>`;
+                
+                // **Opcional: Adiciona um aviso se há mais para carregar**
+                if (data.items.length > videosExibirInicial) {
+                    msgConfirmacao += `<p>Há mais ${data.items.length - videosExibirInicial} vídeos disponíveis. Adicione o botão "Carregar Mais"!</p>`;
+                }
+                
+                $("#confirma_busca").html(msgConfirmacao);
+
+                // **Melhoria: Armazena o restante dos dados para "Carregar Mais" sem nova API Call**
+                // Em um projeto real, você armazenaria 'data.items' em uma variável global
+                // ou do componente para usar no botão "Carregar Mais".
             })
             .catch(err => {
                 console.error("Erro:", err);
@@ -113,22 +120,20 @@ $(document).ready(() => {
             });
     }
 
-    // ===== FECHAR MODAL (Restante do código...) =====
+    // ===== FECHAR MODAL =====
     function fecharModal() {
         $("#wath").attr("src", "");
         $("#model_play").css("display", "none");
 
-        // Desbloqueia orientação
         if (screen.orientation && screen.orientation.unlock) {
             screen.orientation.unlock();
         }
 
-        // Sai do fullscreen
         if (document.exitFullscreen) document.exitFullscreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
     }
 
-    // ===== EVENTOS (Restante do código...) =====
+    // ===== EVENTOS =====
     $("#btn").click(() => {
         buscar();
         $("#search").val("");
@@ -143,21 +148,13 @@ $(document).ready(() => {
 
     $("#close").on("click", fecharModal);
 
-    // Fechar com ESC
     $(document).on("keydown", e => {
         if (e.key === "Escape") fecharModal();
     });
 
-    // Fechar clicando fora
     $("#model_play").on("click", e => {
         if (e.target.id === "model_play") fecharModal();
     });
 
-    // Links sociais
-    $("#fb").attr();
-    $("#ins").attr();
-    $("#lins").attr();
-
-    // Inicial
     $("#confirma_busca").html(`<h2>Pesquise algo no YouTube</h2>`);
 });
