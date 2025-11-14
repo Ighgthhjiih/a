@@ -1,10 +1,11 @@
 $(document).ready(() => {
     // ===== CHAVES DA API (MANTENHA, MAS USE BACKEND EM PRODUÇÃO) =====
     const API_KEYS = [
+        // Suas chaves de API...
         'AIzaSyAXQ8pDhmoWtmD3vP_SVy3PAtB5mcyLrik',
         'AIzaSyAELl7fzEAwusdazxOg6eg3PxQiJe44ic8',
         'AIzaSyBrRvpEiOPZK4mSKoPsx1uCAkWBd9vuHdg',
-        'AIzaSyCQuahC_L2fywMqqqLNC1CQuFN_VVRbDoM',
+        'AIzaSyCQuah_L2fywMqqqLNC1CQuFN_VVRbDoM',
         'AIzaSyBfZLVv_fEMppsuOZmi_2hMvgKyNMRv6_A',
         'AIzaSyBudXNiZ5V9P_jeteNx47AUndcvLLrRLvw',
         'AIzaSyDKJnsHr3C37LCbxJIFzK6IcLBWdODm6j8',
@@ -20,12 +21,12 @@ $(document).ready(() => {
         return key;
     }
 
-    // ===== DETECTA MOBILE =====
+    // ===== DETECTA MOBILE (Restante do código...) =====
     function isMobile() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
-    // ===== FUNÇÃO PARA ABRIR VÍDEO (COM FULLSCREEN + LANDSCAPE) =====
+    // ===== FUNÇÃO PARA ABRIR VÍDEO (Restante do código...) =====
     function abrirVideo(videoId) {
         const iframe = document.getElementById("wath");
         const modal = document.getElementById("model_play");
@@ -57,16 +58,18 @@ $(document).ready(() => {
         }
     }
 
-    // ===== BUSCA NO YOUTUBE =====
+    // ===== BUSCA NO YOUTUBE (MODIFICADA) =====
     function buscar() {
         let query = document.getElementById("search").value.trim();
         if (!query) return;
 
         const key = getRandomKey();
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=12&order=relevance&regionCode=BR&key=${key}`;
+        
+        // MODIFICAÇÃO AQUI: maxResults=20 e order=date
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=50&order=date&regionCode=BR&key=${key}`;
 
         $("#box_video").html('<div class="loading">Carregando...</div>');
-        $("#confirma_busca").html('<h2>Buscando vídeos...</h2>');
+        $("#confirma_busca").html('<h2>Buscando vídeos mais recentes...</h2>');
 
         fetch(url)
             .then(r => r.json())
@@ -100,7 +103,7 @@ $(document).ready(() => {
                     container.appendChild(div);
                 });
 
-                $("#confirma_busca").html(`<h2>${data.items.length} vídeos encontrados</h2>`);
+                $("#confirma_busca").html(`<h2>${data.items.length} vídeos recentes encontrados</h2>`);
             })
             .catch(err => {
                 console.error("Erro:", err);
@@ -109,7 +112,7 @@ $(document).ready(() => {
             });
     }
 
-    // ===== FECHAR MODAL =====
+    // ===== FECHAR MODAL (Restante do código...) =====
     function fecharModal() {
         $("#wath").attr("src", "");
         $("#model_play").css("display", "none");
@@ -124,7 +127,7 @@ $(document).ready(() => {
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
     }
 
-    // ===== EVENTOS =====
+    // ===== EVENTOS (Restante do código...) =====
     $("#btn").click(() => {
         buscar();
         $("#search").val("");
